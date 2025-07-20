@@ -48,13 +48,8 @@
 
         const status = data.status === '使用中' ? '登記使用' : '退出';
         document.getElementById('result').innerText = `✅ ${name} 已${status}「${room}」`;
-      } catch (e) {
-        console.error(e);
-        document.getElementById('result').innerText = '發生錯誤，請稍後再試。';
-      }
-    }
+catch (e) {
+  console.error(e);
+  document.getElementById('result').innerText = '發生錯誤：' + (e.message || e);
+}
 
-    main();
-  </script>
-</body>
-</html>
