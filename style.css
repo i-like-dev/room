@@ -1,0 +1,98 @@
+/* 全域設定 */
+body {
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  color: #333;
+  margin: 0;
+  padding: 2rem;
+}
+
+/* 標題區 */
+header {
+  background-color: #1976d2;
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 1.5rem 0;
+  box-shadow: 0 4px 8px rgb(25 118 210 / 0.4);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+/* 主要內容區 */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* 表格 */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  background: transparent;
+}
+
+thead tr th {
+  background: #1565c0;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 2px 5px rgb(21 101 192 / 0.6);
+}
+
+tbody tr {
+  background: #fff;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+tbody tr:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.15);
+}
+
+tbody tr td {
+  padding: 1rem 1.2rem;
+  text-align: center;
+  font-size: 1rem;
+  vertical-align: middle;
+  border: none;
+}
+
+/* 空房狀態 */
+.vacant {
+  color: #888;
+  font-style: italic;
+}
+
+/* 使用中狀態 */
+.occupied {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  font-weight: 600;
+  border-left: 4px solid #1976d2;
+}
+
+/* 狀態欄位 */
+.status {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+  header {
+    font-size: 1.5rem;
+    padding: 1rem 0;
+  }
+  tbody tr td {
+    padding: 0.8rem 0.6rem;
+    font-size: 0.9rem;
+  }
+}
