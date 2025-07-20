@@ -1,6 +1,6 @@
 async function loadStatus() {
   const res = await fetch(
-    "https://script.google.com/macros/s/AKfycbxuRz-3WAV3eIvx6nlA5SQ5B5UoQr8nrv1eZOxTybKk8a3W6f9ddXsM-zALbC2WJBkX/exec"
+    "https://script.google.com/macros/s/AKfycbxN-2mp0ZR97kT-U35z7DEjv76GECbaqbgFKNhEc4FrOoE2WnVHFdclE8WcTjdRCoNx/exec"
   );
   const status = await res.json();
   const rooms = await (await fetch("rooms.json")).json();
