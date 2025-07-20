@@ -1,55 +1,83 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>房間登記測試</title>
+  <meta charset="UTF-8">
+  <title>房間登記系統</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 2em;
+      background-color: #f2f2f2;
+    }
+    h1 {
+      color: #333;
+    }
+    #status {
+      font-size: 1.5em;
+      margin-top: 2em;
+      color: #0066cc;
+    }
+  </style>
 </head>
 <body>
-  <h2 id="result">處理中...</h2>
+  <h1>房間登記中…</h1>
+  <p id="status">處理中，請稍候。</p>
 
   <script>
-    const LIFF_ID = '2007783385-8GwXyJ5A'; // 你的 LIFF ID
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwVAQD38JpZTldTblVAV4uD8g9AJNcLQHICnRFRmJT90rmHXB7vhBSBITaFkhHO5R76/exec'; // 你的 GAS 網址
+    const liffId = '2007783385-8GwXyJ5A'; // 你的 LIFF ID
+    const endpoint = 'https://script.google.com/macros/s/AKfycbzzlV9Op3EnKJY_U-MBjn0W91TTME8E-g9MxMEyvDslrSJgcX6qNdwJmU3ksin28jkn/exec';
+
+    function getRoomFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('room');
+    }
 
     async function main() {
       try {
-        await liff.init({ liffId: LIFF_ID });
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let room = urlParams.get('room');
+        const room = getRoomFromURL();
         if (!room) {
-          room = localStorage.getItem('room');
-        } else {
-          localStorage.setItem('room', room);
-        }
-
-        if (!liff.isLoggedIn()) {
-          localStorage.setItem('room', room);
-          liff.login();
+          document.getElementById('status').innerText = '錯誤：未指定房間。';
           return;
         }
 
-        if (!room) {
-          document.getElementById('result').innerText = '找不到房間參數，請使用正確 QR Code。';
+        await liff.init({ liffId });
+        if (!liff.isLoggedIn()) {
+          liff.login();
           return;
         }
 
         const profile = await liff.getProfile();
         const name = profile.displayName;
+        const uid = profile.userId;
 
-        const res = await fetch(`${GAS_URL}?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name)}`);
-        if (!res.ok) {
-          document.getElementById('result').innerText = `伺服器錯誤：${res.status}`;
-          return;
-        }
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            room,
+            name,
+            uid
+          })
+        });
 
         const data = await res.json();
+        if (data.status === 'entered') {
+          document.getElementById('status').innerText = `${name} 已進入 ${room}`;
+        } else if (data.status === 'exited') {
+          document.getElementById('status').innerText = `${name} 已離開 ${room}`;
+        } else {
+          document.getElementById('status').innerText = '無法辨識狀態。';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status').innerText = '發生錯誤，請稍後再試。';
+      }
+    }
 
-        const status = data.status === '使用中' ? '登記使用' : '退出';
-        document.getElementById('result').innerText = `✅ ${name} 已${status}「${room}」`;
-catch (e) {
-  console.error(e);
-  document.getElementById('result').innerText = '發生錯誤：' + (e.message || e);
-}
-
+    main();
+  </script>
+</body>
+</html>
