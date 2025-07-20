@@ -2,30 +2,22 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>房間使用登記</title>
+  <title>房間登記測試</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    body { font-family: 'Noto Sans TC', sans-serif; padding: 2rem; text-align: center; }
-    #result { font-size: 1.5rem; margin-top: 2rem; }
-  </style>
 </head>
 <body>
-  <h1>房間使用登記系統</h1>
-  <div id="result">處理中…</div>
+  <h2 id="result">處理中...</h2>
 
   <script>
-    const LIFF_ID = '2007783385-8GwXyJ5A';
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxN-2mp0ZR97kT-U35z7DEjv76GECbaqbgFKNhEc4FrOoE2WnVHFdclE8WcTjdRCoNx/exec';
+    const LIFF_ID = '2007783385-8GwXyJ5A'; // 你的 LIFF ID
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxuRz-3WAV3eIvx6nlA5SQ5B5UoQr8nrv1eZOxTybKk8a3W6f9ddXsM-zALbC2WJBkX/exec'; // 你的 GAS 網址
 
     async function main() {
       try {
         await liff.init({ liffId: LIFF_ID });
 
-        // 取 url 參數 room
-        let url = new URL(window.location.href);
-        let room = url.searchParams.get('room');
-
-        // 登入前先把room存localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        let room = urlParams.get('room');
         if (!room) {
           room = localStorage.getItem('room');
         } else {
@@ -33,37 +25,31 @@
         }
 
         if (!liff.isLoggedIn()) {
-          // 還沒登入，先存房間，登入後自動回來會讀localStorage
           localStorage.setItem('room', room);
           liff.login();
           return;
         }
 
         if (!room) {
-          document.getElementById('result').innerText = '找不到房間參數，請用正確 QR Code 掃描。';
+          document.getElementById('result').innerText = '找不到房間參數，請使用正確 QR Code。';
           return;
         }
 
-        // 取得使用者資料
         const profile = await liff.getProfile();
         const name = profile.displayName;
 
-        // 呼叫 GAS，帶 room 與 name
         const res = await fetch(`${GAS_URL}?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name)}`);
-
         if (!res.ok) {
-          document.getElementById('result').innerText = '伺服器錯誤，請稍後再試。';
+          document.getElementById('result').innerText = `伺服器錯誤：${res.status}`;
           return;
         }
 
         const data = await res.json();
 
-        // 成功訊息
         const status = data.status === '使用中' ? '登記使用' : '退出';
         document.getElementById('result').innerText = `✅ ${name} 已${status}「${room}」`;
-
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
         document.getElementById('result').innerText = '發生錯誤，請稍後再試。';
       }
     }
