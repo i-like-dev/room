@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>房間使用登記</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h2 id="result">處理中…</h2>
+
+  <script src="js/liff.js"></script>
+  <script>
+    async function main() {
+      await initLiff();
+      const url = new URL(location.href);
+      const room = url.searchParams.get("room");
+      const profile = await liff.getProfile();
+      const name = profile.displayName;
+
+      const res = await fetch(
+        `https://script.google.com/macros/s/AKfycbxuRz-3WAV3eIvx6nlA5SQ5B5UoQr8nrv1eZOxTybKk8a3W6f9ddXsM-zALbC2WJBkX/exec?room=${room}&name=${name}`
+      );
+      const data = await res.json();
+
+      document.getElementById("result").innerText =
+        `✅ ${name} 已${data.status === "使用中" ? "登記使用" : "退出"}「${room}」`;
+    }
+
+    main();
+  </script>
+</body>
+</html>
